@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:BatKeeper" x:Class="BatKeeper.BatKeeperPage"
 		xmlns:iconize="clr-namespace:FormsPlugin.Iconize;assembly=FormsPlugin.Iconize">
+     <ContentPage.Padding>
+        <OnPlatform x:TypeArguments="Thickness" iOS="0, 40, 0, 0" Android="0" WinPhone="0" />
+     </ContentPage.Padding>	
 <Grid>
 	<Grid.RowDefinitions>
 		<RowDefinition Height="*"/>
@@ -9,8 +12,9 @@
 		<ColumnDefinition Width="*"/>
 	</Grid.ColumnDefinitions>
 	<Image Source="{local:ImageResource splashscreen.png}" x:Name="imgSplash" Aspect="AspectFill" Grid.Row="0" Grid.Column="0"/>
-	<Label Text="Connecting to Smartphone..." VerticalOptions="Center" HorizontalOptions="Center" />
-		<StackLayout>
+	<StackLayout>
+	<Label x:Name="lState" Text="Connecting to Smartphone..." VerticalOptions="Center" HorizontalOptions="Center" />
+			<!--
 				<StackLayout Orientation="Horizontal">
 		<iconize:IconLabel FontSize="60" Text="fa-first-order" />
 		<iconize:IconLabel FontSize="60" Text="fa-rebel" />
@@ -36,8 +40,10 @@
 		<iconize:IconLabel FontSize="60" Text="fa-battery-full" TextColor="Green" />
 				</StackLayout>
 		<iconize:IconImage Icon="fa-rebel" IconColor="Olive" IconSize="100"/>
+			-->
 		<iconize:IconButton x:Name="btOk" FontSize="60" Text="fa-rebel" TextColor="Fuchsia" WidthRequest="100" BackgroundColor="Silver"  />
-		</StackLayout>
+		<Button x:Name="btRetry" Text="Retry" />
+	</StackLayout>
 	<Image x:Name="touch1" Source="{local:ImageResource touch.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/>
 	<Image x:Name="touch2" Source="{local:ImageResource touch_down.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/>
 </Grid>

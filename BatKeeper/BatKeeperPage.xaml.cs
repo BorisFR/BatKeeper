@@ -15,11 +15,25 @@ namespace BatKeeper
 			};
 			imgSplash.GestureRecognizers.Add (tapGestureRecognizer);
 			btOk.Clicked += BtOk_Clicked;
+			btRetry.Clicked += BtRetry_Clicked;
+			Helper.BleChanged += Helper_BleChanged;
+		}
+
+		void Helper_BleChanged (string status)
+		{
+			Device.BeginInvokeOnMainThread (() => {
+				lState.Text = status;
+			});
 		}
 
 		void BtOk_Clicked (object sender, EventArgs e)
 		{
 			Navigation.PushModalAsync (new RootPage ());
+		}
+
+		void BtRetry_Clicked (object sender, EventArgs e)
+		{
+			Helper.BleInit ();
 		}
 
 		private bool doAnimation = false;
@@ -60,8 +74,8 @@ namespace BatKeeper
 		{
 			base.OnAppearing ();
 			StartTimer ();
-			if (Helper.Notificator == null)
-				Helper.Notificator = DependencyService.Get<IToastNotificator> ();
+			Helper.NotificatorInit ();
+			Helper.BleInit ();
 		}
 
 		protected override void OnDisappearing ()
