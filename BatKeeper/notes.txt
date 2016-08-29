@@ -1,0 +1,32 @@
+﻿packages
+--------
+liste : https://github.com/xamarin/XamarinComponents
+https://github.com/jamesmontemagno/VibratePlugin
+https://github.com/jamesmontemagno/SettingsPlugin
+https://github.com/xabre/xamarin-bluetooth-le
+installé
+https://github.com/jsmarcus/Xamarin.Plugins/tree/master/Iconize
+http://fontawesome.io/icons/
+
+
+
+
+
+1/ connexxion BLE
+
+2/ récup' des indos du MASTER
+
+ID unique
+Canal de communication
+Etat de la batterie
+Etat des SLAVEs
+
+3/ 
+
+
+
+
+
+
+
+http://fr.starwars.wikia.com/wiki/Jek_Porkins

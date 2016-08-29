@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:BatKeeper" x:Class="BatKeeper.BatKeeperPage"
+		xmlns:iconize="clr-namespace:FormsPlugin.Iconize;assembly=FormsPlugin.Iconize">
+<Grid>
+	<Grid.RowDefinitions>
+		<RowDefinition Height="*"/>
+	</Grid.RowDefinitions>
+	<Grid.ColumnDefinitions>
+		<ColumnDefinition Width="*"/>
+	</Grid.ColumnDefinitions>
+	<Image Source="{local:ImageResource splashscreen.png}" x:Name="imgSplash" Aspect="AspectFill" Grid.Row="0" Grid.Column="0"/>
+	<Label Text="Connecting to Smartphone..." VerticalOptions="Center" HorizontalOptions="Center" />
+		<StackLayout>
+				<StackLayout Orientation="Horizontal">
+		<iconize:IconLabel FontSize="60" Text="fa-first-order" />
+		<iconize:IconLabel FontSize="60" Text="fa-rebel" />
+		<iconize:IconLabel FontSize="60" Text="fa-empire" />
+				</StackLayout>
+				<StackLayout Orientation="Horizontal">
+		<iconize:IconLabel FontSize="60" Text="fa-cog" />
+		<iconize:IconLabel FontSize="60" Text="fa-bars" />
+		<iconize:IconLabel FontSize="60" Text="fa-mobile" />
+		<iconize:IconLabel FontSize="60" Text="fa-home" />
+		<iconize:IconLabel FontSize="60" Text="fa-tachometer" />
+				</StackLayout>
+				<StackLayout Orientation="Horizontal">
+		<iconize:IconLabel FontSize="60" Text="fa-power-off" TextColor="Green" />
+		<iconize:IconLabel FontSize="60" Text="fa-power-off" TextColor="Red" />
+		<iconize:IconLabel FontSize="60" Text="fa-bluetooth" TextColor="Blue" />
+				</StackLayout>
+				<StackLayout Orientation="Horizontal">
+		<iconize:IconLabel FontSize="60" Text="fa-battery-empty" TextColor="Black" />
+		<iconize:IconLabel FontSize="60" Text="fa-battery-quarter" TextColor="Red" />
+		<iconize:IconLabel FontSize="60" Text="fa-battery-half" TextColor="Purple" />
+		<iconize:IconLabel FontSize="60" Text="fa-battery-three-quarters" TextColor="Yellow" />
+		<iconize:IconLabel FontSize="60" Text="fa-battery-full" TextColor="Green" />
+				</StackLayout>
+		<iconize:IconImage Icon="fa-rebel" IconColor="Olive" IconSize="100"/>
+		<iconize:IconButton x:Name="btOk" FontSize="60" Text="fa-rebel" TextColor="Fuchsia" WidthRequest="100" BackgroundColor="Silver"  />
+		</StackLayout>
+	<Image x:Name="touch1" Source="{local:ImageResource touch.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/>
+	<Image x:Name="touch2" Source="{local:ImageResource touch_down.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/>
+</Grid>
+</ContentPage>
