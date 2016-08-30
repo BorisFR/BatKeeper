@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:BatKeeper" x:Class="BatKeeper.BatKeeperPage"
 		xmlns:iconize="clr-namespace:FormsPlugin.Iconize;assembly=FormsPlugin.Iconize">
-     <ContentPage.Padding>
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<local:BleStateToEnableConverter x:Key="BleStateToEnableConverter" />
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	<ContentPage.Padding>
         <OnPlatform x:TypeArguments="Thickness" iOS="0, 40, 0, 0" Android="0" WinPhone="0" />
      </ContentPage.Padding>	
 <Grid>
@@ -13,7 +18,8 @@
 	</Grid.ColumnDefinitions>
 	<Image Source="{local:ImageResource splashscreen.png}" x:Name="imgSplash" Aspect="AspectFill" Grid.Row="0" Grid.Column="0"/>
 	<StackLayout>
-	<Label x:Name="lState" Text="Connecting to Smartphone..." VerticalOptions="Center" HorizontalOptions="Center" />
+		<Label Text="BatKeeper" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+		<Label Text="Select your device:" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" />
 			<!--
 				<StackLayout Orientation="Horizontal">
 		<iconize:IconLabel FontSize="60" Text="fa-first-order" />
@@ -41,10 +47,27 @@
 				</StackLayout>
 		<iconize:IconImage Icon="fa-rebel" IconColor="Olive" IconSize="100"/>
 			-->
-		<iconize:IconButton x:Name="btOk" FontSize="60" Text="fa-rebel" TextColor="Fuchsia" WidthRequest="100" BackgroundColor="Silver"  />
-		<Button x:Name="btRetry" Text="Retry" />
+        <ListView  x:Name="listView">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell IsEnabled="{Binding IsEnable}"> <!--, Converter={StaticResource BleStateToEnableConverter}}"> -->
+                        <StackLayout BackgroundColor="#ffffff" Orientation="Horizontal" Margin="0" Padding="0,6,0,0">
+							<iconize:IconLabel FontSize="30" Text="fa-bluetooth" TextColor="Blue" Margin="0" />
+                            <StackLayout Orientation="Vertical" Margin="0" Padding="12,0,0,0">
+                                <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="#000000" Margin="0" />
+                                <Label Text="{Binding State, StringFormat='{0}'}" FontSize="12" TextColor="#000000" Margin="0, -4, 0, 0" />
+                            </StackLayout>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+		<Label x:Name="lState" Text="Connecting to Smartphone..." HorizontalOptions="Center" />
+		<Button x:Name="btRetry" Text="Search again" BackgroundColor="#eee" BorderRadius="12" BorderColor="#000000" BorderWidth="1" Margin="12,0,12,30" />
+		<!--<iconize:IconButton x:Name="btOk" FontSize="60" Text="fa-rebel" TextColor="Fuchsia" WidthRequest="100" BackgroundColor="Silver"  />-->
 	</StackLayout>
+		<!--
 	<Image x:Name="touch1" Source="{local:ImageResource touch.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/>
-	<Image x:Name="touch2" Source="{local:ImageResource touch_down.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/>
+	<Image x:Name="touch2" Source="{local:ImageResource touch_down.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/> -->
 </Grid>
 </ContentPage>

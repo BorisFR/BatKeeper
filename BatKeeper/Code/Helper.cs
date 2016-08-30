@@ -6,14 +6,41 @@ using Plugin.BLE.Abstractions.Contracts;
 using Plugin.Toasts;
 using System.Linq.Expressions;
 using Xamarin.Forms;
+using Plugin.BLE.Abstractions;
+using System.Threading.Tasks;
+using Plugin.BLE.Abstractions.EventArgs;
+using System.Threading;
 
 namespace BatKeeper
 {
+	public delegate void Trigger ();
 	public delegate void Changed (string status);
+
+	public class BleDevice
+	{
+
+		public IDevice Device;
+
+		public bool IsEnable {
+			get {
+				if (!(Device.State == DeviceState.Disconnected))
+					return false;
+				if (Device.Name == null)
+					return false;
+				if (Device.Name.StartsWith ("BatKeeper", StringComparison.CurrentCulture))
+					return true;
+				return false;
+			}
+		}
+
+		public string Name { get { if (Device.Name == null) return string.Empty; return Device.Name; } }
+		public DeviceState State { get { return Device.State; } }
+	}
 
 	public static class Helper
 	{
 		public static event Changed BleChanged;
+		public static event Trigger BleSearchEnd;
 
 		private static void SendChanged (string text)
 		{
@@ -52,7 +79,7 @@ namespace BatKeeper
 		private static IAdapter adapter;
 		private static IDevice device;
 		private static IList<IService> services;
-		private static ObservableCollection<IDevice> deviceList = new ObservableCollection<IDevice> ();
+		public static ObservableCollection<BleDevice> DeviceList = new ObservableCollection<BleDevice> ();
 		private static bool bleOk = false;
 
 		public static bool BleOk ()
@@ -121,6 +148,7 @@ namespace BatKeeper
 				adapter.DeviceAdvertised += Adapter_DeviceAdvertised;
 			}
 			SendChanged ("Searching devices");
+			DeviceList.Clear ();
 			adapter.StartScanningForDevicesAsync ();
 		}
 
@@ -129,15 +157,19 @@ namespace BatKeeper
 		{
 			System.Diagnostics.Debug.WriteLine ($"Device discovered {e.Device.Id}:  {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");
 			device = e.Device;
-			deviceList.Add (e.Device);
-			if (e.Device.Name.Equals ("BatKeeper")) {
+			if (e.Device.Name != null)
+				DeviceList.Add (new BleDevice () { Device = e.Device });
+			if (e.Device.Name != null && e.Device.Name.Equals ("BatKeeper")) {
 				try {
 					await adapter.ConnectToDeviceAsync (e.Device);
 				} catch (Exception err) {
 					System.Diagnostics.Debug.WriteLine ($"Could not connect to {device.Id}:  {device.Name} / {e.Device.State} / {device.NativeDevice} => {err.Message}");
 				}
 			}
-			SendChanged ($"Device found {device.Name}.");
+			if (e.Device.Name != null)
+				SendChanged ($"Device found {device.Name}.");
+			else
+				SendChanged ("Device found (null).");
 		}
 
 		private static void Adapter_DeviceAdvertised (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
@@ -196,6 +228,11 @@ namespace BatKeeper
 		{
 			System.Diagnostics.Debug.WriteLine ("Device ScanTimeoutElapsed");
 			SendChanged ("Searching end.");
+			if (DeviceList.Count == 0) {
+			}
+			if (BleSearchEnd != null)
+				BleSearchEnd ();
 		}
+
 	}
 }
