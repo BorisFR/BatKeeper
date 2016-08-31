@@ -16,37 +16,8 @@ namespace BatKeeper
 	public delegate void Trigger ();
 	public delegate void Changed (string status);
 
-	public class BleDevice
-	{
-
-		public IDevice Device;
-
-		public bool IsEnable {
-			get {
-				if (!(Device.State == DeviceState.Disconnected))
-					return false;
-				if (Device.Name == null)
-					return false;
-				if (Device.Name.StartsWith ("BatKeeper", StringComparison.CurrentCulture))
-					return true;
-				return false;
-			}
-		}
-
-		public string Name { get { if (Device.Name == null) return string.Empty; return Device.Name; } }
-		public DeviceState State { get { return Device.State; } }
-	}
-
 	public static class Helper
 	{
-		public static event Changed BleChanged;
-		public static event Trigger BleSearchEnd;
-
-		private static void SendChanged (string text)
-		{
-			if (BleChanged == null) return;
-			BleChanged (text);
-		}
 
 		internal static RootPage Navigation;
 		internal static MenuPage MenuPage;
@@ -73,14 +44,39 @@ namespace BatKeeper
 			notificator.Notify (ToastNotificationType.Info, "Info", text, TimeSpan.FromSeconds (5));
 		}
 
+		// Settings stuff
+		// *****************************************************************
+		public static void SettingsSave<T> (string key, T value)
+		{
+			Plugin.Settings.CrossSettings.Current.AddOrUpdateValue<T> (key, value);
+		}
+
+		public static T SettingsRead<T> (string key, T defaultValue)
+		{
+			return Plugin.Settings.CrossSettings.Current.GetValueOrDefault<T> (key, defaultValue);
+		}
+
 		// Blutooth Low Energy stuff
 		// *****************************************************************
+		public static event Changed BleChanged;
+		public static event Trigger BleSearchEnd;
+
 		private static IBluetoothLE ble;
 		private static IAdapter adapter;
 		private static IDevice device;
 		private static IList<IService> services;
-		public static ObservableCollection<BleDevice> DeviceList = new ObservableCollection<BleDevice> ();
 		private static bool bleOk = false;
+
+		public static ObservableCollection<BleDevice> DeviceList = new ObservableCollection<BleDevice> ();
+		public static BleDevice TheDevice;
+		public static Guid PreferedGuidDevice = Guid.Empty;
+
+
+		private static void SendChanged (string text)
+		{
+			if (BleChanged == null) return;
+			BleChanged (text);
+		}
 
 		public static bool BleOk ()
 		{
@@ -152,6 +148,12 @@ namespace BatKeeper
 			adapter.StartScanningForDevicesAsync ();
 		}
 
+		public static void BleStopSearch ()
+		{
+			if (ble == null) return;
+			if (adapter == null) return;
+			adapter.StopScanningForDevicesAsync ();
+		}
 
 		private static async void Adapter_DeviceDiscovered (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
 		{

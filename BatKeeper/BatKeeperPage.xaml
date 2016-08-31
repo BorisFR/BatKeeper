@@ -17,7 +17,7 @@
 		<ColumnDefinition Width="*"/>
 	</Grid.ColumnDefinitions>
 	<Image Source="{local:ImageResource splashscreen.png}" x:Name="imgSplash" Aspect="AspectFill" Grid.Row="0" Grid.Column="0"/>
-	<StackLayout>
+	<StackLayout Margin="0" Padding="0" >
 		<Label Text="BatKeeper" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
 		<Label Text="Select your device:" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" />
 			<!--
@@ -51,11 +51,14 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell IsEnabled="{Binding IsEnable}"> <!--, Converter={StaticResource BleStateToEnableConverter}}"> -->
-                        <StackLayout BackgroundColor="#ffffff" Orientation="Horizontal" Margin="0" Padding="0,6,0,0">
+                        <StackLayout BackgroundColor="{Binding StateBackgroundColor}" Orientation="Horizontal" Margin="0" Padding="0,6,0,0">
 							<iconize:IconLabel FontSize="30" Text="fa-bluetooth" TextColor="Blue" Margin="0" />
-                            <StackLayout Orientation="Vertical" Margin="0" Padding="12,0,0,0">
-                                <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="#000000" Margin="0" />
-                                <Label Text="{Binding State, StringFormat='{0}'}" FontSize="12" TextColor="#000000" Margin="0, -4, 0, 0" />
+                            <StackLayout Orientation="Vertical" Margin="0" Padding="0">
+                                <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="#000000" Margin="0" />
+								<StackLayout Orientation="Horizontal">
+	                                <Label Text="{Binding State, StringFormat='State: {0}'}" FontSize="10" TextColor="#000000" Margin="0, -4, 0, 0" />
+	                                <Label Text="{Binding Id, StringFormat='Id: {0}'}" FontSize="8" TextColor="#000000" Margin="0, -2, 0, 0" />
+								</StackLayout>
                             </StackLayout>
                         </StackLayout>
                     </ViewCell>

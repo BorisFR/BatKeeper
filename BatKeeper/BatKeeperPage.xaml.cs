@@ -19,7 +19,21 @@ namespace BatKeeper
 			Helper.BleChanged += Helper_BleChanged;
 			Helper.BleSearchEnd += Helper_BleSearchEnd;
 			listView.ItemsSource = Helper.DeviceList;
+			listView.ItemSelected += ListView_ItemSelected;
 			btRetry.IsEnabled = false;
+		}
+
+		void ListView_ItemSelected (object sender, SelectedItemChangedEventArgs e)
+		{
+			if (e.SelectedItem == null) return;
+			Helper.TheDevice = (BleDevice)e.SelectedItem;
+
+			timerIsRunning = false;
+			Helper.BleChanged -= Helper_BleChanged;
+			Helper.BleSearchEnd -= Helper_BleSearchEnd;
+			listView.ItemSelected -= ListView_ItemSelected;
+			Helper.BleStopSearch ();
+			Navigation.PushModalAsync (new RootPage (), true);
 		}
 
 		void Helper_BleSearchEnd ()
@@ -49,6 +63,7 @@ namespace BatKeeper
 
 		private bool ClearMessage ()
 		{
+			if (!timerIsRunning) return false;
 			if ((DateTime.Now - lastMessage).TotalSeconds < 1)
 				return true;
 			timerIsRunning = false;
@@ -58,10 +73,12 @@ namespace BatKeeper
 			return false;
 		}
 
+		/*
 		private void BtOk_Clicked (object sender, EventArgs e)
 		{
 			Navigation.PushModalAsync (new RootPage ());
 		}
+		*/
 
 		private void BtRetry_Clicked (object sender, EventArgs e)
 		{
@@ -116,7 +133,6 @@ namespace BatKeeper
 		protected override void OnDisappearing ()
 		{
 			//StopTimer ();
-			Helper.BleChanged -= Helper_BleChanged;
 			base.OnDisappearing ();
 		}
 

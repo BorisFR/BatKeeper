@@ -7,10 +7,10 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle ("BatKeeper")]
 [assembly: AssemblyDescription ("")]
 [assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("Maxxing")]
+[assembly: AssemblyCompany ("BorisSoft")]
 [assembly: AssemblyProduct ("")]
-[assembly: AssemblyCopyright ("(c) 2012, 2013, 2014, 2015, 2016 - Stéphane Fardoux")]
-[assembly: AssemblyTrademark ("Maxxing")]
+[assembly: AssemblyCopyright ("(c) 2016 - Boris")]
+[assembly: AssemblyTrademark ("BorisSoft")]
 [assembly: AssemblyCulture ("")]
 
 // The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
