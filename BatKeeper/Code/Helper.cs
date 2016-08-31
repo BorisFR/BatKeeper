@@ -238,6 +238,13 @@ namespace BatKeeper
 			adapter.ConnectToDeviceAsync (Helper.TheDevice.Device);
 		}
 
+		public async static void DisconnectFromDevice ()
+		{
+			if (Helper.TheDevice.State == DeviceState.Connected) {
+				adapter.DisconnectDeviceAsync (Helper.TheDevice.Device);
+			}
+		}
+
 		private static async void Adapter_DeviceConnected (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine ($"Device connected {e.Device.Id}: {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");

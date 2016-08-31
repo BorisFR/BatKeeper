@@ -7,6 +7,7 @@
 		<StackLayout Margin="0" Padding="0" >
 			<Label Text="BatKeeper" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
 			<Label x:Name="lDevice" Text="Connecting to xxx" FontSize="16" FontAttributes="Bold" HorizontalOptions="Start" />
+
 			<Label x:Name="lState" Text="Connecting ..." HorizontalOptions="Center" />
 			<Button x:Name="btCancel" Text="Choose another device" BackgroundColor="#eee" BorderRadius="12" BorderColor="#000000" BorderWidth="1" Margin="12,0,12,30" />
 		</StackLayout>

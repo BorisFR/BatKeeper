@@ -33,6 +33,7 @@ namespace BatKeeper
 
 		private void GoBackChooseDevice ()
 		{
+			Helper.DisconnectFromDevice ();
 			Helper.BleDeviceStateChange -= Helper_BleDeviceStateChange;
 			Helper.GlobalState = GlobalState.ChooseDevice;
 			Helper.Navigation.RefreshMenu ();
@@ -48,8 +49,8 @@ namespace BatKeeper
 		{
 			ShowText ($"State: {Helper.TheDevice.State}");
 			if (Helper.TheDevice.State == DeviceState.Disconnected) {
-				GoBackChooseDevice ();
 				Helper.DoNotificationInfo ("Device disconnect.");
+				GoBackChooseDevice ();
 				return;
 			}
 			if (Helper.TheDevice.State == DeviceState.Connected) {
