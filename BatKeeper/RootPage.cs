@@ -5,16 +5,21 @@ namespace BatKeeper
 {
 	public class RootPage : MasterDetailPage
 	{
-		MenuPage menuPage;
+		PageMenu menuPage;
 
 		public RootPage ()
 		{
 			Helper.Navigation = this;
-			menuPage = new MenuPage ();
+			menuPage = new PageMenu ();
 			menuPage.Menu.ItemSelected += (sender, e) => NavigateTo (e.SelectedItem as MenuItemCustom);
 			Master = menuPage;
-			Detail = new NavigationPage (new HomePage ());
+			Detail = new NavigationPage (new PageChooseDevice ());
 			Helper.MenuPage = menuPage;
+		}
+
+		public void RefreshMenu ()
+		{
+			menuPage.RefreshMenu ();
 		}
 
 		public void NavigateTo (MenuItemCustom menu)

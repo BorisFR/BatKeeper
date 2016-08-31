@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:BatKeeper" x:Class="BatKeeper.BatKeeperPage"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:BatKeeper" x:Class="BatKeeper.PageChooseDevice"
 		xmlns:iconize="clr-namespace:FormsPlugin.Iconize;assembly=FormsPlugin.Iconize">
+	<!--
 	<ContentPage.Resources>
 		<ResourceDictionary>
 			<local:BleStateToEnableConverter x:Key="BleStateToEnableConverter" />
 		</ResourceDictionary>
 	</ContentPage.Resources>
+	-->
 	<ContentPage.Padding>
         <OnPlatform x:TypeArguments="Thickness" iOS="0, 40, 0, 0" Android="0" WinPhone="0" />
      </ContentPage.Padding>	
-<Grid>
+	<!--
+	<Grid>
 	<Grid.RowDefinitions>
 		<RowDefinition Height="*"/>
 	</Grid.RowDefinitions>
@@ -17,6 +20,7 @@
 		<ColumnDefinition Width="*"/>
 	</Grid.ColumnDefinitions>
 	<Image Source="{local:ImageResource splashscreen.png}" x:Name="imgSplash" Aspect="AspectFill" Grid.Row="0" Grid.Column="0"/>
+	-->
 	<StackLayout Margin="0" Padding="0" >
 		<Label Text="BatKeeper" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
 		<Label Text="Select your device:" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" />
@@ -51,13 +55,13 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell IsEnabled="{Binding IsEnable}"> <!--, Converter={StaticResource BleStateToEnableConverter}}"> -->
-                        <StackLayout BackgroundColor="{Binding StateBackgroundColor}" Orientation="Horizontal" Margin="0" Padding="0,6,0,0">
+                        <StackLayout BackgroundColor="{Binding StateBackgroundColor}" Orientation="Horizontal" Margin="0" Padding="0,6,0,0" Spacing="4">
 							<iconize:IconLabel FontSize="30" Text="fa-bluetooth" TextColor="Blue" Margin="0" />
-                            <StackLayout Orientation="Vertical" Margin="0" Padding="0">
+                            <StackLayout Orientation="Vertical" Margin="0" Padding="0" Spacing="0">
                                 <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="#000000" Margin="0" />
-								<StackLayout Orientation="Horizontal">
-	                                <Label Text="{Binding State, StringFormat='State: {0}'}" FontSize="10" TextColor="#000000" Margin="0, -4, 0, 0" />
-	                                <Label Text="{Binding Id, StringFormat='Id: {0}'}" FontSize="8" TextColor="#000000" Margin="0, -2, 0, 0" />
+								<StackLayout Orientation="Horizontal" Spacing="2">
+	                                <Label Text="{Binding State, StringFormat='State: {0}'}" FontSize="10" TextColor="#000000" Margin="0, -2, 0, 0" />
+	                                <Label Text="{Binding Id, StringFormat='Id:{0}'}" FontSize="8" TextColor="#000000" Margin="0, 0, 0, 0" />
 								</StackLayout>
                             </StackLayout>
                         </StackLayout>
@@ -72,5 +76,5 @@
 		<!--
 	<Image x:Name="touch1" Source="{local:ImageResource touch.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/>
 	<Image x:Name="touch2" Source="{local:ImageResource touch_down.png}" Aspect="AspectFill" Grid.Row="0" Grid.Column="0" WidthRequest="41" HeightRequest="62" HorizontalOptions="EndAndExpand" VerticalOptions="EndAndExpand"/> -->
-</Grid>
+<!--</Grid>-->
 </ContentPage>

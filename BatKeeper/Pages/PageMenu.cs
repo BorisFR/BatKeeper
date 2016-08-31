@@ -5,11 +5,11 @@ using Xamarin.Forms;
 
 namespace BatKeeper
 {
-	public partial class MenuPage : ContentPage
+	public partial class PageMenu : ContentPage
 	{
 		public ListView Menu { get; set; }
 
-		public MenuPage ()
+		public PageMenu ()
 		{
 			Title = "Back";
 			//BackgroundColor = GlobalDesign.Menu_BackgroundColor;

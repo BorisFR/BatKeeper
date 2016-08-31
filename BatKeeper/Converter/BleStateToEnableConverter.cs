@@ -5,6 +5,7 @@ using Xamarin.Forms;
 
 namespace BatKeeper
 {
+	/*
 	public class BleStateToEnableConverter : IValueConverter
 	{
 
@@ -23,4 +24,5 @@ namespace BatKeeper
 			throw new NotImplementedException ();
 		}
 	}
+	*/
 }

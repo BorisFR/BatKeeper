@@ -16,7 +16,7 @@ namespace BatKeeper
 			Helper.PreferedGuidDevice = (Guid)Helper.SettingsRead ("PreferedDeviceId", Guid.Empty);
 			Debug.WriteLine ($"Prefered device ID: {Helper.PreferedGuidDevice}");
 
-			MainPage = new BatKeeperPage ();
+			MainPage = new RootPage ();
 		}
 
 		protected override void OnStart ()

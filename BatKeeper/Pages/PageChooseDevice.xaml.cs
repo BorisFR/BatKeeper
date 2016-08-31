@@ -4,16 +4,23 @@ using Xamarin.Forms;
 
 namespace BatKeeper
 {
-	public partial class BatKeeperPage : ContentPage
+	public partial class PageChooseDevice : ContentPage
 	{
-		public BatKeeperPage ()
+		public PageChooseDevice ()
 		{
 			InitializeComponent ();
+			NavigationPage.SetHasNavigationBar (this, false);
+			if (Helper.GlobalState != GlobalState.ChooseDevice) {
+				Helper.GlobalState = GlobalState.ChooseDevice;
+				Helper.Navigation.RefreshMenu ();
+			}
+			/*
 			var tapGestureRecognizer = new TapGestureRecognizer ();
 			tapGestureRecognizer.Tapped += (s, e) => {
 				Navigation.PushModalAsync (new RootPage ());
 			};
 			imgSplash.GestureRecognizers.Add (tapGestureRecognizer);
+			*/
 			//btOk.Clicked += BtOk_Clicked;
 			btRetry.Clicked += BtRetry_Clicked;
 			Helper.BleChanged += Helper_BleChanged;
@@ -33,7 +40,10 @@ namespace BatKeeper
 			Helper.BleSearchEnd -= Helper_BleSearchEnd;
 			listView.ItemSelected -= ListView_ItemSelected;
 			Helper.BleStopSearch ();
-			Navigation.PushModalAsync (new RootPage (), true);
+			Helper.GlobalState = GlobalState.ConnectToDevice;
+			Helper.Navigation.RefreshMenu ();
+			Helper.Navigation.NavigateTo (typeof (PageConnectToDevice));
+			//Navigation.PushModalAsync (new RootPage (), true);
 		}
 
 		void Helper_BleSearchEnd ()

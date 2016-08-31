@@ -16,11 +16,21 @@ namespace BatKeeper
 	public delegate void Trigger ();
 	public delegate void Changed (string status);
 
+	public enum GlobalState
+	{
+		ChooseDevice,
+		ConnectToDevice,
+		DeviceOk
+	}
+
 	public static class Helper
 	{
+		public static GlobalState GlobalState = GlobalState.ChooseDevice;
 
 		internal static RootPage Navigation;
-		internal static MenuPage MenuPage;
+		internal static PageMenu MenuPage;
+
+		public static Random Random = new Random (DateTime.Now.Millisecond);
 
 		// Toast stuff
 		// *****************************************************************
@@ -60,6 +70,7 @@ namespace BatKeeper
 		// *****************************************************************
 		public static event Changed BleChanged;
 		public static event Trigger BleSearchEnd;
+		public static event Trigger BleDeviceStateChange;
 
 		private static IBluetoothLE ble;
 		private static IAdapter adapter;
@@ -70,6 +81,11 @@ namespace BatKeeper
 		public static ObservableCollection<BleDevice> DeviceList = new ObservableCollection<BleDevice> ();
 		public static BleDevice TheDevice;
 		public static Guid PreferedGuidDevice = Guid.Empty;
+		private static bool foundOneBatKeeper = false;
+
+
+		// BLE device search stuff
+		// *****************************************************************
 
 
 		private static void SendChanged (string text)
@@ -118,9 +134,17 @@ namespace BatKeeper
 			if (ble == null) {
 				ble = CrossBluetoothLE.Current;
 			}
+			DeviceList.Clear ();
+			if (ble.State == BluetoothState.Unavailable) {
+				BleEnd ();
+				return;
+			}
 			ble.StateChanged += (s, e) => {
 				System.Diagnostics.Debug.WriteLine ($"The bluetooth state changed to {e.NewState}");
 				BleChangeState ();
+				if (e.NewState == BluetoothState.Unavailable) {
+					BleEnd ();
+				}
 			};
 			//BleChangeState ();
 			/*
@@ -144,7 +168,7 @@ namespace BatKeeper
 				adapter.DeviceAdvertised += Adapter_DeviceAdvertised;
 			}
 			SendChanged ("Searching devices");
-			DeviceList.Clear ();
+			foundOneBatKeeper = false;
 			adapter.StartScanningForDevicesAsync ();
 		}
 
@@ -161,9 +185,10 @@ namespace BatKeeper
 			device = e.Device;
 			if (e.Device.Name != null)
 				DeviceList.Add (new BleDevice () { Device = e.Device });
-			if (e.Device.Name != null && e.Device.Name.Equals ("BatKeeper")) {
+			if (e.Device.Name != null && e.Device.Name.StartsWith ("BatKeeper", StringComparison.CurrentCulture)) {
+				foundOneBatKeeper = true;
 				try {
-					await adapter.ConnectToDeviceAsync (e.Device);
+					//await adapter.ConnectToDeviceAsync (e.Device);
 				} catch (Exception err) {
 					System.Diagnostics.Debug.WriteLine ($"Could not connect to {device.Id}:  {device.Name} / {e.Device.State} / {device.NativeDevice} => {err.Message}");
 				}
@@ -179,10 +204,76 @@ namespace BatKeeper
 			System.Diagnostics.Debug.WriteLine ($"Device DeviceAdvertised {e.Device.Id}: {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");
 		}
 
+
+		private static void Adapter_ScanTimeoutElapsed (object sender, EventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine ("Device ScanTimeoutElapsed");
+			BleEnd ();
+		}
+
+		private static void BleEnd ()
+		{
+			SendChanged ("Searching end.");
+			if (DeviceList.Count == 0 || !foundOneBatKeeper) {
+				for (int i = 0; i < Helper.Random.Next (7); i++) {
+					DeviceList.Add (new BleDevice () { Device = new FakeDevice (false) });
+				}
+				DeviceList.Add (new BleDevice () { Device = new FakeDevice (true) });
+				for (int i = 0; i < Helper.Random.Next (7); i++)
+					DeviceList.Add (new BleDevice () { Device = new FakeDevice (false) });
+			}
+			if (BleSearchEnd != null)
+				BleSearchEnd ();
+		}
+
+
+		// BLE connecting stuff
+		// *****************************************************************
+
+
+		public async static void ConnectToDevice ()
+		{
+			if (Helper.TheDevice.Device.State == DeviceState.Connected)
+				return;
+			adapter.ConnectToDeviceAsync (Helper.TheDevice.Device);
+		}
+
 		private static async void Adapter_DeviceConnected (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine ($"Device connected {e.Device.Id}: {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");
+			if (BleDeviceStateChange != null)
+				BleDeviceStateChange ();
+		}
+
+		private static void Adapter_DeviceConnectionLost (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceErrorEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine ($"Device connection lost {e.Device.Id}: {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");
+			if (BleDeviceStateChange != null)
+				BleDeviceStateChange ();
+		}
+
+		private static void Adapter_DeviceDisconnected (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine ($"Device disconnected {e.Device.Id}: {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");
+			if (BleDeviceStateChange != null)
+				BleDeviceStateChange ();
+		}
+
+
+		// BLE service stuff
+		// *****************************************************************
+
+
+		public static async void SearchBleServices ()
+		{
+			if (Helper.TheDevice.Device.State != DeviceState.Connected)
+				return;
 			services = await device.GetServicesAsync ();
+			if (services == null) {
+				if (TheDevice.State == DeviceState.Connected)
+					adapter.DisconnectDeviceAsync (TheDevice.Device);
+				return;
+			}
 			foreach (IService s in services) {
 				System.Diagnostics.Debug.WriteLine ($"Service {s.Id}: {s.Name} / {s.IsPrimary}");
 				var x = await s.GetCharacteristicsAsync ();
@@ -212,28 +303,6 @@ namespace BatKeeper
 					}
 				}
 			}
-		}
-
-		private static void Adapter_DeviceConnectionLost (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceErrorEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine ($"Device connection lost {e.Device.Id}: {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");
-
-		}
-
-		private static void Adapter_DeviceDisconnected (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine ($"Device disconnected {e.Device.Id}: {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");
-
-		}
-
-		private static void Adapter_ScanTimeoutElapsed (object sender, EventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine ("Device ScanTimeoutElapsed");
-			SendChanged ("Searching end.");
-			if (DeviceList.Count == 0) {
-			}
-			if (BleSearchEnd != null)
-				BleSearchEnd ();
 		}
 
 	}
