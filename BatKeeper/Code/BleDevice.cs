@@ -16,6 +16,7 @@ namespace BatKeeper
 
 	public class BleDevice
 	{
+		private IList<BleService> allServices = new List<BleService> ();
 
 		public IDevice Device;
 
@@ -47,6 +48,27 @@ namespace BatKeeper
 				return Color.FromRgb (220, 220, 220);
 			}
 		}
+
+		public IList<BleService> AllServices {
+			get { return allServices; }
+			set { allServices = value; }
+		}
+	}
+
+	public class BleCharacteristic
+	{
+		public ICharacteristic Characteristic;
+	}
+
+	public class BleService
+	{
+		public IService Service;
+		private IList<BleCharacteristic> characteristics = new List<BleCharacteristic> ();
+
+		public IList<BleCharacteristic> Characteristics {
+			get { return characteristics; }
+			set { characteristics = value; }
+		}
 	}
 
 	public class FakeService : IService
@@ -56,17 +78,19 @@ namespace BatKeeper
 		public FakeService (int serviceNumber)
 		{
 			number = serviceNumber;
-			switch (serviceNumber) {
-			case 0:
-				break;
-			}
 		}
 
 		public Guid Id {
 			get {
+				// 00001530-1212-efde-1523-785feabcd123 DFU ?
+				// 6e400001-b5a3-f393-e0a9-e50e24dcca9e UART ?
 				switch (number) {
 				case 0:
-					return Guid.Parse ("");
+					return Guid.Parse ("0000180a-0000-1000-8000-00805f9b34fb");
+				case 1:
+					return Guid.Parse ("0000180f-0000-1000-8000-00805f9b34fb");
+				case 2:
+					return Guid.Parse ("876167c2-1572-44c4-93bc-f2c6ec50324f");
 				}
 				return Guid.Empty;
 			}
@@ -82,7 +106,11 @@ namespace BatKeeper
 			get {
 				switch (number) {
 				case 0:
-					return "Service name";
+					return "Device Information";
+				case 1:
+					return "Battery Service";
+				case 2:
+					return "BatKeeper Infos";
 				}
 				return String.Empty;
 			}

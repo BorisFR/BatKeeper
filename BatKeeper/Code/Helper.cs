@@ -71,6 +71,7 @@ namespace BatKeeper
 		public static event Changed BleChanged;
 		public static event Trigger BleSearchEnd;
 		public static event Trigger BleDeviceStateChange;
+		public static event Trigger BleDeviceServicesLoaded;
 
 		private static IBluetoothLE ble;
 		private static IAdapter adapter;
@@ -282,10 +283,16 @@ namespace BatKeeper
 				return;
 			}
 			foreach (IService s in services) {
+				BleService bs = new BleService ();
+				bs.Service = s;
 				System.Diagnostics.Debug.WriteLine ($"Service {s.Id}: {s.Name} / {s.IsPrimary}");
 				var x = await s.GetCharacteristicsAsync ();
 				foreach (ICharacteristic c in x) {
+					BleCharacteristic bc = new BleCharacteristic ();
+					bc.Characteristic = c;
+					bs.Characteristics.Add (bc);
 					System.Diagnostics.Debug.WriteLine ($"Characteristic {c.Id}: {c.Name} / {c.Properties}");
+					/*
 					if (c.CanUpdate) {
 						c.ValueUpdated += (sender2, e2) => {
 							System.Diagnostics.Debug.WriteLine ($"Characteristic {c.Name} change: {e2.Characteristic.Value [0]}");
@@ -296,21 +303,25 @@ namespace BatKeeper
 							var r = await c.ReadAsync ();
 							string st = System.Text.Encoding.UTF8.GetString (r, 0, r.Length);
 							System.Diagnostics.Debug.WriteLine ($"Characteristic {c.Name} read: {st}");
-							/*
-							StringBuilder sb = new StringBuilder ();
-							sb.Append ("Characteristic ");
-							sb.Append (c.Name);
-							sb.Append (":");
-							for (int z = 0; z < r.Length; z++) {
-								sb.Append (Convert.ToString (r [z]));
-							}
-							Debug.WriteLine (sb.ToString ());
-							*/
+
 						}
 					}
+					*/
+					TheDevice.AllServices.Add (bs);
 				}
 			}
+			if (BleDeviceServicesLoaded != null)
+				BleDeviceServicesLoaded ();
 		}
-
 	}
 }
+/*
+StringBuilder sb = new StringBuilder ();
+sb.Append ("Characteristic ");
+sb.Append (c.Name);
+sb.Append (":");
+for (int z = 0; z < r.Length; z++) {
+sb.Append (Convert.ToString (r [z]));
+}
+Debug.WriteLine (sb.ToString ());
+*/

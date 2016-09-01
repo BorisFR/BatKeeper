@@ -16,11 +16,13 @@ namespace BatKeeper
 			ShowText ("Connecting...");
 			btCancel.Clicked += BtCancel_Clicked;
 			Helper.BleDeviceStateChange += Helper_BleDeviceStateChange;
+			Helper.BleDeviceServicesLoaded += Helper_BleDeviceServicesLoaded;
 			Helper.ConnectToDevice ();
 		}
 
 		protected override void OnDisappearing ()
 		{
+			Disconnect ();
 			base.OnDisappearing ();
 		}
 
@@ -31,10 +33,16 @@ namespace BatKeeper
 			});
 		}
 
+		private void Disconnect ()
+		{
+			Helper.BleDeviceServicesLoaded -= Helper_BleDeviceServicesLoaded;
+			Helper.BleDeviceStateChange -= Helper_BleDeviceStateChange;
+			Helper.DisconnectFromDevice ();
+		}
+
 		private void GoBackChooseDevice ()
 		{
-			Helper.DisconnectFromDevice ();
-			Helper.BleDeviceStateChange -= Helper_BleDeviceStateChange;
+			Disconnect ();
 			Helper.GlobalState = GlobalState.ChooseDevice;
 			Helper.Navigation.RefreshMenu ();
 			Helper.Navigation.NavigateTo (typeof (PageChooseDevice));
@@ -57,5 +65,24 @@ namespace BatKeeper
 				Helper.SearchBleServices ();
 			}
 		}
+
+		void Helper_BleDeviceServicesLoaded ()
+		{
+			bool found = false;
+			ShowText ("Services ready");
+			foreach (BleService bs in Helper.TheDevice.AllServices) {
+				if (bs.Service.Id.ToString ().Equals ("876167c2-1572-44c4-93bc-f2c6ec50324f")) {
+					// on a trouvé notre service :)
+					found = true;
+				}
+			}
+			if (!found) {
+				GoBackChooseDevice ();
+				Helper.DoNotificationError ("This is not a BatKeeper device. Please choose the right device.");
+			} else {
+				ShowText ("This is a good device.");
+			}
+		}
+
 	}
 }
