@@ -9,7 +9,8 @@ https://github.com/xabre/xamarin-bluetooth-le
 https://github.com/jamesmontemagno/SettingsPlugin
 
 
-
+draw battery oled
+https://github.com/itnok/Adafruit_FeatherOLED_Photography/blob/master/Adafruit_FeatherOLED_Photography.cpp
 
 
 1/ connexion BLE
