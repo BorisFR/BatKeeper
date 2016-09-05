@@ -25,6 +25,10 @@ namespace BatKeeper
 
 	public static class Helper
 	{
+		public const string DEVICE_ID = "7CA11001-EC1B-49C7-ABE2-671597A51252";
+		public const string SERVICE_ID = "876167c2-1572-44c4-93bc-f2c6ec50324f";
+		public const string CHARACTERISTIC_ID = "00002601-0000-1000-8000-00805f9b34fb";
+
 		public static GlobalState GlobalState = GlobalState.ChooseDevice;
 
 		internal static RootPage Navigation;
@@ -83,6 +87,8 @@ namespace BatKeeper
 		public static BleDevice TheDevice;
 		public static Guid PreferedGuidDevice = Guid.Empty;
 		private static bool foundOneBatKeeper = false;
+		public static BleCharacteristic TheCharacteristic;
+		public static int BleAuth = 0;
 
 
 		// BLE device search stuff
@@ -188,6 +194,13 @@ namespace BatKeeper
 				DeviceList.Add (new BleDevice () { Device = e.Device });
 			if (e.Device.Name != null && e.Device.Name.StartsWith ("BatKeeper", StringComparison.CurrentCulture)) {
 				foundOneBatKeeper = true;
+				if (e.Device.Id.Equals (Helper.PreferedGuidDevice)) {
+					Helper.TheDevice = new BleDevice () { Device = e.Device };
+					Helper.BleStopSearch ();
+					Helper.GlobalState = GlobalState.ConnectToDevice;
+					Helper.Navigation.RefreshMenu ();
+					Helper.Navigation.NavigateTo (typeof (PageConnectToDevice));
+				}
 				try {
 					//await adapter.ConnectToDeviceAsync (e.Device);
 				} catch (Exception err) {
@@ -283,9 +296,14 @@ namespace BatKeeper
 				return;
 			}
 			foreach (IService s in services) {
+				bool ourService = false;
 				BleService bs = new BleService ();
 				bs.Service = s;
 				System.Diagnostics.Debug.WriteLine ($"Service {s.Id}: {s.Name} / {s.IsPrimary}");
+				if (s.Id.ToString ().Equals (SERVICE_ID)) {
+					// we found our Service :)
+					ourService = true;
+				}
 				var x = await s.GetCharacteristicsAsync ();
 				foreach (ICharacteristic c in x) {
 					BleCharacteristic bc = new BleCharacteristic ();
@@ -308,11 +326,26 @@ namespace BatKeeper
 					}
 					*/
 					TheDevice.AllServices.Add (bs);
+					if (ourService && c.Id.ToString ().Equals (CHARACTERISTIC_ID)) {
+						// auth stuff
+					}
 				}
 			}
 			if (BleDeviceServicesLoaded != null)
 				BleDeviceServicesLoaded ();
 		}
+
+		public static async Task<bool> WriteDataToBle (ICharacteristic c, Int32 value)
+		{
+			byte [] data = new byte [4];
+			data [3] = (byte)(value >> 24);
+			data [2] = (byte)(value >> 16);
+			data [1] = (byte)(value >> 8);
+			data [0] = (byte)(value);
+			System.Diagnostics.Debug.WriteLine ($"Writing to Ble: {value}");
+			return await c.WriteAsync (data);
+		}
+
 	}
 }
 /*

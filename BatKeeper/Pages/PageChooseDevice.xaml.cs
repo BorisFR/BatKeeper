@@ -34,7 +34,11 @@ namespace BatKeeper
 		{
 			if (e.SelectedItem == null) return;
 			Helper.TheDevice = (BleDevice)e.SelectedItem;
+			DeviceIsChoosen ();
+		}
 
+		private void DeviceIsChoosen ()
+		{
 			timerIsRunning = false;
 			Helper.BleChanged -= Helper_BleChanged;
 			Helper.BleSearchEnd -= Helper_BleSearchEnd;

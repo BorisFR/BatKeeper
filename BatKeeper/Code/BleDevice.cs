@@ -152,7 +152,7 @@ namespace BatKeeper
 		public Guid Id {
 			get {
 				if (isPrefered)
-					return Guid.Parse ("7CA11001-EC1B-49C7-ABE2-671597A51252");
+					return Guid.Parse (Helper.DEVICE_ID);
 				if (id == Guid.Empty)
 					id = Guid.NewGuid ();
 				return id;

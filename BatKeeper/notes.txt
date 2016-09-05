@@ -9,6 +9,26 @@ https://github.com/xabre/xamarin-bluetooth-le
 https://github.com/jamesmontemagno/SettingsPlugin
 
 
+liste des GATT officiel
+https://www.bluetooth.com/specifications/adopted-specifications
+flag des GAP
+https://www.bluetooth.org/en-us/specification/assigned-numbers/generic-access-profile
+liste des services
+https://www.bluetooth.com/specifications/gatt/services
+liste des characteristics
+https://www.bluetooth.com/specifications/gatt/characteristics
+
+
+http://blog.falafel.com/arduino-btle-gatt-bracelet-and-windows-iot-core/
+
+https://learn.adafruit.com/adafruit-feather-m0-bluefruit-le/overview
+https://learn.adafruit.com/introducing-adafruit-ble-bluetooth-low-energy-friend/introduction
+https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/overview
+
+
+
+
+
 draw battery oled
 https://github.com/itnok/Adafruit_FeatherOLED_Photography/blob/master/Adafruit_FeatherOLED_Photography.cpp
 
