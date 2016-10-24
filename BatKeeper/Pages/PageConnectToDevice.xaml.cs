@@ -38,10 +38,11 @@ namespace BatKeeper
 			});
 		}
 
-		private void Disconnect ()
+		private async void Disconnect ()
 		{
 			if (Helper.TheCharacteristic != null) {
-				Helper.TheCharacteristic.Characteristic.StopUpdates ();
+				await Helper.TheCharacteristic.Characteristic.StopUpdatesAsync ();
+				//Helper.TheCharacteristic.Characteristic.StopUpdates ();
 				Helper.TheCharacteristic.Characteristic.ValueUpdated -= GotAnswer;
 				Helper.TheCharacteristic = null;
 			}
@@ -147,7 +148,8 @@ namespace BatKeeper
 			*/
 			System.Diagnostics.Debug.WriteLine ("Add to event update");
 			Helper.TheCharacteristic.Characteristic.ValueUpdated += GotAnswer;
-			Helper.TheCharacteristic.Characteristic.StartUpdates ();
+			await Helper.TheCharacteristic.Characteristic.StartUpdatesAsync ();
+			//Helper.TheCharacteristic.Characteristic.StartUpdates ();
 
 			if (await Helper.WriteDataToBle (Helper.TheCharacteristic.Characteristic, Helper.BleAuth)) {
 				// good auth !!!
@@ -161,7 +163,8 @@ namespace BatKeeper
 
 		private async void GotAnswer (object sender, Plugin.BLE.Abstractions.EventArgs.CharacteristicUpdatedEventArgs e)
 		{
-			Helper.TheCharacteristic.Characteristic.StopUpdates ();
+			await Helper.TheCharacteristic.Characteristic.StopUpdatesAsync ();
+			//Helper.TheCharacteristic.Characteristic.StopUpdates ();
 			Helper.TheCharacteristic.Characteristic.ValueUpdated -= GotAnswer;
 			byte [] res = new byte [4];
 			res = await e.Characteristic.ReadAsync ();
