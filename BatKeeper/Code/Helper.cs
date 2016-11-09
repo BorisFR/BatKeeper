@@ -50,12 +50,16 @@ namespace BatKeeper
 
 		public static void DoNotificationError (string text)
 		{
-			notificator.Notify (ToastNotificationType.Error, "Error", text, TimeSpan.FromSeconds (5));
+			try {
+				notificator.Notify (ToastNotificationType.Error, "Error", text, TimeSpan.FromSeconds (5));
+			} catch (Exception) { }
 		}
 
 		public static void DoNotificationInfo (string text)
 		{
-			notificator.Notify (ToastNotificationType.Info, "Info", text, TimeSpan.FromSeconds (5));
+			try {
+				notificator.Notify (ToastNotificationType.Info, "Info", text, TimeSpan.FromSeconds (5));
+			} catch (Exception) { }
 		}
 
 		// Settings stuff
@@ -269,6 +273,7 @@ namespace BatKeeper
 		private static void Adapter_DeviceConnectionLost (object sender, Plugin.BLE.Abstractions.EventArgs.DeviceErrorEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine ($"Device connection lost {e.Device.Id}: {e.Device.Name} / {e.Device.State} / {e.Device.NativeDevice}");
+			return;
 			if (BleDeviceStateChange != null)
 				BleDeviceStateChange ();
 		}
@@ -287,14 +292,19 @@ namespace BatKeeper
 
 		public static async void SearchBleServices ()
 		{
-			if (Helper.TheDevice.Device.State != DeviceState.Connected)
+			System.Diagnostics.Debug.WriteLine ("*** Searching services");
+			if (Helper.TheDevice.Device.State != DeviceState.Connected) {
+				System.Diagnostics.Debug.WriteLine (@"/!\ Not connect!");
 				return;
+			}
 			services = await device.GetServicesAsync ();
 			if (services == null) {
 				if (TheDevice.State == DeviceState.Connected)
 					adapter.DisconnectDeviceAsync (TheDevice.Device);
+				System.Diagnostics.Debug.WriteLine (@"/!\ No service!");
 				return;
 			}
+			System.Diagnostics.Debug.WriteLine ("**** our service is here?");
 			foreach (IService s in services) {
 				bool ourService = false;
 				BleService bs = new BleService ();
@@ -303,6 +313,7 @@ namespace BatKeeper
 				if (s.Id.ToString ().Equals (SERVICE_ID)) {
 					// we found our Service :)
 					ourService = true;
+					System.Diagnostics.Debug.WriteLine ("*** Service found");
 				}
 				var x = await s.GetCharacteristicsAsync ();
 				foreach (ICharacteristic c in x) {
@@ -328,6 +339,7 @@ namespace BatKeeper
 					TheDevice.AllServices.Add (bs);
 					if (ourService && c.Id.ToString ().Equals (CHARACTERISTIC_ID)) {
 						// auth stuff
+						System.Diagnostics.Debug.WriteLine ("*** Characteristic found");
 					}
 				}
 			}

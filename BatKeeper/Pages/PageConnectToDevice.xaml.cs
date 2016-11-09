@@ -77,15 +77,18 @@ namespace BatKeeper
 
 		void ECode_TextChanged (object sender, TextChangedEventArgs e)
 		{
-			if (eCode.Text.Trim ().Length == 3) {
-				try {
-					int code = Convert.ToInt32 (eCode.Text.Trim ());
-					btOk.IsEnabled = true;
-				} catch (Exception err) {
-					btOk.IsEnabled = false;
+			try {
+				if (eCode.Text.Trim ().Length == 3) {
+					try {
+						int code = Convert.ToInt32 (eCode.Text.Trim ());
+						btOk.IsEnabled = true;
+					} catch (Exception err) {
+						btOk.IsEnabled = false;
+					}
 				}
-			}
+			} catch (Exception) { }
 		}
+
 
 		void Helper_BleDeviceStateChange ()
 		{
@@ -96,6 +99,7 @@ namespace BatKeeper
 				return;
 			}
 			if (Helper.TheDevice.State == DeviceState.Connected) {
+				System.Diagnostics.Debug.WriteLine ("** Connected, searching services");
 				Helper.SearchBleServices ();
 			}
 		}
@@ -113,6 +117,7 @@ namespace BatKeeper
 							if (Helper.TheCharacteristic == null) {
 								found = true;
 								Helper.TheCharacteristic = bc;
+								System.Diagnostics.Debug.WriteLine ("*** Characteristic found");
 							}
 						}
 					}

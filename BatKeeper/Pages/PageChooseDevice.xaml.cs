@@ -42,7 +42,7 @@ namespace BatKeeper
 			timerIsRunning = false;
 			Helper.BleChanged -= Helper_BleChanged;
 			Helper.BleSearchEnd -= Helper_BleSearchEnd;
-			listView.ItemSelected -= ListView_ItemSelected;
+			//listView.ItemSelected -= ListView_ItemSelected;
 			Helper.BleStopSearch ();
 			Helper.GlobalState = GlobalState.ConnectToDevice;
 			Helper.Navigation.RefreshMenu ();
@@ -61,7 +61,9 @@ namespace BatKeeper
 		void Helper_BleChanged (string status)
 		{
 			Device.BeginInvokeOnMainThread (() => {
-				lState.Text = status;
+				try {
+					lState.Text = status;
+				} catch (Exception) { }
 			});
 			StartTimer ();
 		}
@@ -82,7 +84,9 @@ namespace BatKeeper
 				return true;
 			timerIsRunning = false;
 			Device.BeginInvokeOnMainThread (() => {
-				lState.Text = string.Empty;
+				try {
+					lState.Text = string.Empty;
+				} catch (Exception) { }
 			});
 			return false;
 		}
