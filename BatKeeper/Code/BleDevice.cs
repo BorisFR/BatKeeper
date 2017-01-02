@@ -116,6 +116,30 @@ namespace BatKeeper
 			}
 		}
 
+		IDevice IService.Device {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		Guid IService.Id {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		bool IService.IsPrimary {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		string IService.Name {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
 		public Task<ICharacteristic> GetCharacteristicAsync (Guid id)
 		{
 			return null;
@@ -124,6 +148,16 @@ namespace BatKeeper
 		public Task<IEnumerable<ICharacteristic>> GetCharacteristicsAsync ()
 		{
 			return null;
+		}
+
+		Task<ICharacteristic> IService.GetCharacteristicAsync (Guid id)
+		{
+			throw new NotImplementedException ();
+		}
+
+		Task<IList<ICharacteristic>> IService.GetCharacteristicsAsync ()
+		{
+			throw new NotImplementedException ();
 		}
 	}
 
