@@ -27,7 +27,7 @@ namespace BatKeeper
 
 		private void BtDisconnect_Clicked (object sender, EventArgs e)
 		{
-			Helper.DisconnectFromDevice ();
+			Helper.BleDisconnectFromDevice ();
 		}
 
 	}

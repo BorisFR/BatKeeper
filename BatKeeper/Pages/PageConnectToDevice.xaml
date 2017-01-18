@@ -4,7 +4,7 @@
 		<OnPlatform x:TypeArguments="Thickness" iOS="0, 40, 0, 0" Android="0" WinPhone="0" />
 	</ContentPage.Padding>	
 	<ContentPage.Content>
-		<StackLayout Margin="0" Padding="0" >
+		<StackLayout Margin="0" Padding="0">
 			<Label Text="BatKeeper" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
 			<Label x:Name="lDevice" Text="Connecting to xxx" FontSize="16" FontAttributes="Bold" HorizontalOptions="Start" />
 			<Label Text="Enter the code you see on MASTER device:" FontSize="14" HorizontalOptions="Start" />

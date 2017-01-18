@@ -25,7 +25,7 @@ namespace BatKeeper
 			btRetry.Clicked += BtRetry_Clicked;
 			Helper.BleChanged += Helper_BleChanged;
 			Helper.BleSearchEnd += Helper_BleSearchEnd;
-			listView.ItemsSource = Helper.DeviceList;
+			listView.ItemsSource = Helper.allBleDevices;
 			listView.ItemSelected += ListView_ItemSelected;
 			btRetry.IsEnabled = false;
 		}
@@ -43,7 +43,7 @@ namespace BatKeeper
 			Helper.BleChanged -= Helper_BleChanged;
 			Helper.BleSearchEnd -= Helper_BleSearchEnd;
 			//listView.ItemSelected -= ListView_ItemSelected;
-			Helper.BleStopSearch ();
+			Helper.BleStopSearchingDevicesNow ();
 			Helper.GlobalState = GlobalState.ConnectToDevice;
 			Helper.Navigation.RefreshMenu ();
 			Helper.Navigation.NavigateTo (typeof (PageConnectToDevice));

@@ -1,0 +1,13 @@
+﻿{
+  "dependencies": {
+    "Plugin.BLE": "1.2.0-beta4",
+    "Toasts.Forms.Plugin": "2.0.4",
+    "Xam.FormsPlugin.Iconize": "1.0.10",
+    "Xam.Plugin.Iconize": "1.0.10",
+    "Xam.Plugins.Settings": "2.5.1.0",
+    "Xamarin.Forms": "2.3.3.180"
+  },
+  "frameworks": {
+    ".NETPortable,Version=v4.5,Profile=Profile111": {}
+  }
+}

@@ -22,6 +22,7 @@ namespace BatKeeper
 
 		public bool IsEnable {
 			get {
+				return true;
 				if (!(Device.State == DeviceState.Disconnected))
 					return false;
 				if (Device.Name == null)
@@ -159,6 +160,7 @@ namespace BatKeeper
 		{
 			throw new NotImplementedException ();
 		}
+
 	}
 
 	public class FakeDevice : IDevice

@@ -54,4 +54,6 @@ Global
 		{B2C720DA-9127-4947-AAE3-EBDDDF17FE2C}.Debug|iPhone.ActiveCfg = Debug|Any CPU
 		{B2C720DA-9127-4947-AAE3-EBDDDF17FE2C}.Debug|iPhone.Build.0 = Debug|Any CPU
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
 EndGlobal

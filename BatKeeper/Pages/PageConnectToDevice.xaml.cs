@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Plugin.BLE.Abstractions;
 using Xamarin.Forms;
 
@@ -13,15 +14,19 @@ namespace BatKeeper
 			InitializeComponent ();
 			NavigationPage.SetHasNavigationBar (this, false);
 
-			lDevice.Text = $"Device {Helper.TheDevice.Name}";
-			ShowText ("Connecting...");
-			btCancel.Clicked += BtCancel_Clicked;
-			Helper.BleDeviceStateChange += Helper_BleDeviceStateChange;
-			Helper.BleDeviceServicesLoaded += Helper_BleDeviceServicesLoaded;
-			btOk.Clicked += BtOk_Clicked;
-			btOk.IsEnabled = false;
-			eCode.TextChanged += ECode_TextChanged;
-			Helper.ConnectToDevice ();
+			try {
+				lDevice.Text = $"Device {Helper.TheDevice.Name}";
+				ShowText ("Connecting...");
+				btCancel.Clicked += BtCancel_Clicked;
+				Helper.BleDeviceStateChange += Helper_BleDeviceStateChange;
+				Helper.BleDeviceServicesLoaded += Helper_BleDeviceServicesLoaded;
+				btOk.Clicked += BtOk_Clicked;
+				btOk.IsEnabled = false;
+				eCode.TextChanged += ECode_TextChanged;
+				Helper.BleConnectToDevice ();
+			} catch (Exception) {
+
+			}
 		}
 
 		protected override void OnDisappearing ()
@@ -33,12 +38,13 @@ namespace BatKeeper
 
 		void ShowText (string status)
 		{
+			//System.Diagnostics.Debug.WriteLine ($"ShowText: {status}");
 			Device.BeginInvokeOnMainThread (() => {
 				lState.Text = status;
 			});
 		}
 
-		private async void Disconnect ()
+		private async Task Disconnect ()
 		{
 			if (Helper.TheCharacteristic != null) {
 				await Helper.TheCharacteristic.Characteristic.StopUpdatesAsync ();
@@ -48,12 +54,12 @@ namespace BatKeeper
 			}
 			Helper.BleDeviceServicesLoaded -= Helper_BleDeviceServicesLoaded;
 			Helper.BleDeviceStateChange -= Helper_BleDeviceStateChange;
-			Helper.DisconnectFromDevice ();
+			Helper.BleDisconnectFromDevice ();
 		}
 
 		private void GoBackChooseDevice ()
 		{
-			Disconnect ();
+			//Disconnect ();
 			Helper.GlobalState = GlobalState.ChooseDevice;
 			Helper.Navigation.RefreshMenu ();
 			Helper.Navigation.NavigateTo (typeof (PageChooseDevice));
@@ -68,9 +74,9 @@ namespace BatKeeper
 		{
 			btOk.IsEnabled = false;
 			try {
-				Helper.BleAuth = Convert.ToInt32 (eCode.Text.Trim ());
+				Helper.BleAuthenticateCodeForDevice = Convert.ToInt32 (eCode.Text.Trim ());
 				DoSendCodeAuth ();
-			} catch (Exception err) {
+			} catch (Exception) {
 				btOk.IsEnabled = true;
 			}
 		}
@@ -82,7 +88,7 @@ namespace BatKeeper
 					try {
 						int code = Convert.ToInt32 (eCode.Text.Trim ());
 						btOk.IsEnabled = true;
-					} catch (Exception err) {
+					} catch (Exception) {
 						btOk.IsEnabled = false;
 					}
 				}
@@ -94,17 +100,23 @@ namespace BatKeeper
 		{
 			ShowText ($"State: {Helper.TheDevice.State}");
 			if (Helper.TheDevice.State == DeviceState.Disconnected) {
+				System.Diagnostics.Debug.WriteLine ("> Disconnected, going back to devices choice");
 				Helper.DoNotificationInfo ("Device disconnect.");
 				GoBackChooseDevice ();
 				return;
 			}
 			if (Helper.TheDevice.State == DeviceState.Connected) {
-				System.Diagnostics.Debug.WriteLine ("** Connected, searching services");
-				Helper.SearchBleServices ();
+				System.Diagnostics.Debug.WriteLine ("> Connected, searching services");
+				//Helper.SearchBleServices ();
+				//Device.BeginInvokeOnMainThread (() => {
+				Helper.BleSearchForServices ();
+				//});
+				return;
 			}
+			System.Diagnostics.Debug.WriteLine ($"> Don't know what to do with this staee: {Helper.TheDevice.State}");
 		}
 
-		private async void Helper_BleDeviceServicesLoaded ()
+		private void Helper_BleDeviceServicesLoaded ()
 		{
 			bool found = false;
 			ShowText ("Services ready");
@@ -117,7 +129,7 @@ namespace BatKeeper
 							if (Helper.TheCharacteristic == null) {
 								found = true;
 								Helper.TheCharacteristic = bc;
-								System.Diagnostics.Debug.WriteLine ("*** Characteristic found");
+								System.Diagnostics.Debug.WriteLine ("> Characteristic found");
 							}
 						}
 					}
@@ -129,8 +141,8 @@ namespace BatKeeper
 			} else {
 				ShowText ("This is a good device.");
 				//Helper.SettingsSave<int> ("BleCode", 981);
-				Helper.BleAuth = (int)(Helper.SettingsRead<int> ("BleCode", 0));
-				if (Helper.BleAuth > 0) {
+				Helper.BleAuthenticateCodeForDevice = (int)(Helper.SettingsRead<int> ("BleCode", 0));
+				if (Helper.BleAuthenticateCodeForDevice > 0) {
 					DoSendCodeAuth ();
 				}
 			}
@@ -151,17 +163,25 @@ namespace BatKeeper
 				}
 			} else {
 			*/
-			System.Diagnostics.Debug.WriteLine ("Add to event update");
+			System.Diagnostics.Debug.WriteLine ("> Add to event update");
+			if (Helper.TheCharacteristic == null) {
+				System.Diagnostics.Debug.WriteLine (@"> /!\ DoSendCodeAuth TheCharacteristic is null :(");
+				return;
+			}
+			if (Helper.TheCharacteristic.Characteristic == null) {
+				System.Diagnostics.Debug.WriteLine (@"> /!\ DoSendCodeAuth TheCharacteristic.Characteristic is null :(");
+				return;
+			}
 			Helper.TheCharacteristic.Characteristic.ValueUpdated += GotAnswer;
 			await Helper.TheCharacteristic.Characteristic.StartUpdatesAsync ();
 			//Helper.TheCharacteristic.Characteristic.StartUpdates ();
 
-			if (await Helper.WriteDataToBle (Helper.TheCharacteristic.Characteristic, Helper.BleAuth)) {
+			if (await Helper.WriteDataToBle (Helper.TheCharacteristic.Characteristic, Helper.BleAuthenticateCodeForDevice)) {
 				// good auth !!!
-				System.Diagnostics.Debug.WriteLine ("Auth sent");
+				System.Diagnostics.Debug.WriteLine ("> Auth sent ok");
 				//Helper.SettingsSave<int> ("BleCode", code);
 			} else {
-				System.Diagnostics.Debug.WriteLine ("Auth sent error");
+				System.Diagnostics.Debug.WriteLine ("> Auth sent error");
 			}
 			//}
 		}
@@ -175,8 +195,8 @@ namespace BatKeeper
 			res = await e.Characteristic.ReadAsync ();
 			if (res [0] == 1) {
 				// auth is ok
-				Helper.SettingsSave<int> ("BleCode", Helper.BleAuth);
-				System.Diagnostics.Debug.WriteLine ("Auth ok!");
+				Helper.SettingsSave<int> ("BleCode", Helper.BleAuthenticateCodeForDevice);
+				System.Diagnostics.Debug.WriteLine ("> Auth ok!");
 
 				Helper.BleDeviceServicesLoaded -= Helper_BleDeviceServicesLoaded;
 				Helper.BleDeviceStateChange -= Helper_BleDeviceStateChange;
@@ -187,7 +207,7 @@ namespace BatKeeper
 			}
 			if (res [0] == 2) {
 				// auth is bad
-				System.Diagnostics.Debug.WriteLine ("Auth not ok");
+				System.Diagnostics.Debug.WriteLine ("> Auth not ok");
 			}
 		}
 
