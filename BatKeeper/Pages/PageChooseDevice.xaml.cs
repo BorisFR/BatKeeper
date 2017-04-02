@@ -1,6 +1,7 @@
 ﻿using System;
 using Plugin.Toasts;
 using Xamarin.Forms;
+using Plugin.BluetoothLE;
 
 namespace BatKeeper
 {
@@ -33,7 +34,7 @@ namespace BatKeeper
 		void ListView_ItemSelected (object sender, SelectedItemChangedEventArgs e)
 		{
 			if (e.SelectedItem == null) return;
-			Helper.TheDevice = (BleDevice)e.SelectedItem;
+			Helper.TheDevice = (IDevice)e.SelectedItem;
 			DeviceIsChoosen ();
 		}
 

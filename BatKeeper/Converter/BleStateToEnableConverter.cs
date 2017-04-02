@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using Plugin.BLE.Abstractions;
 using Xamarin.Forms;
 
 namespace BatKeeper

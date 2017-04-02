@@ -18,7 +18,7 @@ namespace BatKeeper
 
 		void Helper_BleDeviceStateChange ()
 		{
-			Helper.TheCharacteristic = null;
+			//Helper.TheCharacteristic = null;
 			Helper.BleDeviceStateChange -= Helper_BleDeviceStateChange;
 			Helper.GlobalState = GlobalState.ChooseDevice;
 			Helper.Navigation.RefreshMenu ();
@@ -27,7 +27,7 @@ namespace BatKeeper
 
 		private void BtDisconnect_Clicked (object sender, EventArgs e)
 		{
-			Helper.BleDisconnectFromDevice ();
+			//Helper.BleDisconnectFromDevice ();
 		}
 
 	}
