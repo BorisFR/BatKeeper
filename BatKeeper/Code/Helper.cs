@@ -336,11 +336,13 @@ namespace BatKeeper
 
 		private static void DoDisconnectDevice ()
 		{
+			System.Diagnostics.Debug.WriteLine ("** DoDisconnectDevice");
 			TheDevice.CancelConnection ();
 			scanForCharacteristics?.Dispose ();
 			scanForServices?.Dispose ();
 			connectionStatusToDevice?.Dispose ();
 			connectToDevice?.Dispose ();
+			System.Diagnostics.Debug.WriteLine ("** done");
 		}
 
 		private static void OnDeviceStatusChanged (ConnectionStatus status)
@@ -526,7 +528,22 @@ namespace BatKeeper
 			data [1] = (byte)(value >> 8);
 			data [0] = (byte)(value);
 			System.Diagnostics.Debug.WriteLine ($"**** Writing to Ble: {value}");
-			c.Write (data);
+			if (c.CanWriteWithoutResponse ()) {
+				System.Diagnostics.Debug.WriteLine ("**** Writing to Ble CanWriteWithoutResponse");
+				c.WriteWithoutResponse (data);
+			} else {
+				if (c.CanWriteWithResponse ()) {
+					System.Diagnostics.Debug.WriteLine ("**** Writing to Ble CanWriteWithResponse");
+					c.Write (data);
+				} else {
+					if (c.CanWrite ()) {
+						System.Diagnostics.Debug.WriteLine ("**** Writing to Ble CanWrite");
+						c.Write (data);
+					} else {
+						System.Diagnostics.Debug.WriteLine ("**** Writing to Ble ????");
+					}
+				}
+			}
 		}
 
 	}

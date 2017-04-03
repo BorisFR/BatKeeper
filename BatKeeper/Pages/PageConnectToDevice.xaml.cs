@@ -9,6 +9,8 @@ namespace BatKeeper
 	public partial class PageConnectToDevice : ContentPage
 	{
 		IDisposable onNotif;
+		IDisposable onRead;
+		IDisposable onSub;
 
 		public PageConnectToDevice ()
 		{
@@ -36,6 +38,8 @@ namespace BatKeeper
 			//if (Helper.TheCharacteristic == null)
 			//	Disconnect ();
 			//if (onNotif != null)
+			onSub?.Dispose ();
+			onRead?.Dispose ();
 			onNotif?.Dispose ();
 			Helper.BleDeviceStateChange -= Helper_BleDeviceStateChange;
 			base.OnDisappearing ();
@@ -122,13 +126,17 @@ namespace BatKeeper
 
 		private void DoSendCodeAuth ()
 		{
-			System.Diagnostics.Debug.WriteLine ("> Add to event update");
 			if (Helper.TheCharacteristic == null) {
 				System.Diagnostics.Debug.WriteLine (@"> /!\ DoSendCodeAuth TheCharacteristic is null :(");
 				return;
 			}
-			onNotif = Helper.TheCharacteristic.SubscribeToNotifications ().Subscribe (OnNotification);
+			System.Diagnostics.Debug.WriteLine ("> Add to event update");
+			onSub = Helper.TheCharacteristic.SubscribeToNotifications ().Subscribe (OnNotification);
 			//onNotif = Helper.TheCharacteristic.WhenNotificationReceived ().Subscribe (OnNotification);
+
+			onRead = Helper.TheCharacteristic.WhenReadOrNotify (TimeSpan.FromMilliseconds (500)).Subscribe (OnNotification);
+			onNotif = Helper.TheCharacteristic.WhenNotificationReceived ().Subscribe (OnNotification);
+
 			Helper.WriteDataToBle (Helper.TheCharacteristic, Helper.BleAuthenticateCodeForDevice);
 			//await Helper.TheCharacteristic.Characteristic.StartUpdatesAsync ();
 
